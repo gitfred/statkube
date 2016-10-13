@@ -6,6 +6,7 @@ from statkube.wrapper import (
     DEFAULT_SETTING_FILE,
     GH_TOKEN_FILE,
 )
+from statkube.bulk import Bulk
 
 def main(args=None):
     if args is None:
@@ -23,7 +24,12 @@ def main(args=None):
         print GH_TOKEN_FILE
         sys.exit(0)
 
-    GithubWrapper(parsed).run()
+    settings = GithubWrapper.get_settings()
+    if settings.get("STATKUBE_REPOS"):
+        repos = settings['STATKUBE_REPOS']
+        Bulk(parsed, repos).run()
+    else:
+        GithubWrapper(parsed, repo=settings['STATKUBE_REPO'])
 
 
 if __name__ == '__main__':
